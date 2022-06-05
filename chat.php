@@ -1,31 +1,45 @@
 <?php
-    class Chat{
+  session_start();
+  require_once 'backend/chat.php';
+  
+  
+  if(!isset($_SESSION['user']))
+  {
+      header('Location: index.php');
+      die();
+  }
+  
+  
+  $chat = new Chat();
+  $msg = $chat->getMessage()
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>lony resaux</title>
+</head>
+<body>
+    <?php 
     
-    
-        public function getMessage()
+        for($i = 0; $i < count($msg['chat']); $i++)
         {
-            return $this->decode();
+     ?>
+         <div class="container">
+             <p><?php echo $msg['chat'][$i]['message']; ?></p>
+             <span class="time-right"><?php echo $msg['chat'][$i]['pseudo']." &mdash; ".$msg['chat'][$i]['date'];?></span>
+          </div>
+     <?php
         }
-    
-        public function setMessage($message, $pseudo): void 
-        {
-            $json = $this->decode();
-    
-            array_push($json['chat'], [
-                "pseudo" => $pseudo, 
-                "message" => $message,
-                "date" => date('d/m/Y H:i')
-            ]);
-    
-            $str = json_encode($json, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
-            file_put_contents(__DIR__.'/../data/chat.json', $str);
-        }
-        
-        
-        private function decode()
-        {
-            return json_decode(file_get_contents(__DIR__.'/../data/chat.json'), JSON
-        }
-        
-        
-   }
+     ?>
+     <form action="backend/send.php" method="POST">
+         <input type="text" name="msg" placeholder="Message" autocomplete="off" class="form-input"/>
+         <button type="submit">Envoyer</button>
+     </form>
+</body>
+</html>
+  
+  
